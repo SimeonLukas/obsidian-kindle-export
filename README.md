@@ -1,5 +1,5 @@
 # Project 2: obsidian-kindle-export 
-## An Obsidian-Plugin wich is sending your Notes to your Kindle as .mobi File
+## An Obsidian-Plugin wich sends your Notes to your Kindle as .mobi File
 ![](screenrecord.gif)
 
 ### Introduction
