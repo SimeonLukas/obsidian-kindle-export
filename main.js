@@ -1991,7 +1991,7 @@ var Kindle = class extends import_obsidian2.Plugin {
           if (lang == "de") {
             new Notice("\u{1F603} Dein Dokument " + datei + " wird nun exportiert.");
           } else {
-            new Notice("\u{1F603} Your Note " + datei + " is being converted to a ebook");
+            new Notice("\u{1F603} Your Note " + datei + " is being converted to an ebook");
           }
           var url = this.settings.backend;
           var formData = new FormData();
