@@ -13,6 +13,8 @@ I was using Calibre and Pandoc-Export Plugin, but I was wondering about a short 
 - [x] Table of Contents *beta*
 - [x] ```<div style="page-break-after: always;"></div>``` Working
 - [x] ```&&Excludes&&``` are invisible
+- [x] External Links
+- [ ] External embedded Files
 - [ ] Foldercover or Filecover
 - [ ] .html Export (Archive)
 - [ ] .epub Export (Pocketbook)
