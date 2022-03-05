@@ -48,8 +48,8 @@ export default class Kindle extends Plugin {
         let imagelist: string[] = [];
         let imagename: string[] = [];
 		let lang = localStorage.getItem("language");
-        let dokument = this.app.workspace.getActiveFile().path
-        let data = await this.app.vault.adapter.read(dokument)
+        let dokument = this.app.workspace.getActiveFile();
+        let data = await this.app.vault.read(dokument)
         let lines = data.split("\n")
         let result = await this.GetEbook(lines, Inhalt, imagelist, imagename);
         Inhalt = result.Inhalt;
@@ -148,7 +148,7 @@ export default class Kindle extends Plugin {
           for (let i = 0; i < files; i++) {
             let file = this.app.vault.getFiles()[i];
             if (file.name == dateiname[1] && file.extension != "md") {
-              let data = await this.app.vault.adapter.readBinary(file.path);
+              let data = await this.app.vault.readBinary(file);
               let base64 = Buffer.from(data).toString('base64');
               imagename.push(file.name);
               imagelist.push(base64);
@@ -156,7 +156,7 @@ export default class Kindle extends Plugin {
             //   console.log('Bild wurde hinzugefügt!');
             }
             if (file.name == anker[0] + '.md' || file.name == dateiname[1] + '.md') {
-              let data = await this.app.vault.adapter.read(file.path);
+              let data = await this.app.vault.read(file);
               text = Buffer.from(data).toString('utf8');
               for (let i = 1; i < anker.length; i++) {
                 if (anker[i] != undefined) {
