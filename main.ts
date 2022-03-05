@@ -140,7 +140,7 @@ export default class Kindle extends Plugin {
     for (let i = 0; i < lines.length; i++) {
       let text = lines[i];
       if (text.contains("![")) {
-          let dateiname = text.match(/!\[\[(.*?)\]\]/);
+          let dateiname = text.match(/!\[\[(.*?)\]\]/);		  
           if (dateiname != null) {
         //   console.log(dateiname[1]);
           let anker = dateiname[1].split("#");
