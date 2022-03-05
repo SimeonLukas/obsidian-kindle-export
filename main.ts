@@ -89,7 +89,7 @@ export default class Kindle extends Plugin {
 				new Notice('😃 Dein Dokument ' + datei +' wird nun exportiert.');
 				}
 				else {
-				new Notice('😃 Your Note ' + datei + ' is being converted to a ebook');
+				new Notice('😃 Your Note ' + datei + ' is being converted to an ebook');
 				}
 				var url = this.settings.backend;
 				var formData = new FormData();
