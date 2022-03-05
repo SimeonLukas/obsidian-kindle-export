@@ -4,7 +4,7 @@
 
 [This is the exported .mobi File](Export-Test.mobi)
 ### Introduction
-I was using Calibre and Pandoc-Export Plugin, but I was wondering about a short way to Export your .md Files in one Command an add all embedded Files. So you dont have to use a .pdf File. The Plugin creates a *Kindle: Export* Command, which sends all embedded Images and .md Files to a PHP Backend ([Host your own private PHP Backend!](https://github.com/SimeonLukas/Obsidian2Kindle)) which converts it to a .mobi File and sends it via Email to your Kindle.
+I was using Calibre and Pandoc-Export Plugin, but I was wondering about a short way to Export your .md Files in one Command an add all embedded Files. So you dont have to use a .pdf File. The Plugin creates a *Kindle: Export* Command, which sends all embedded Images and .md Files to a PHP Backend ([Host your own private PHP Backend!](https://github.com/SimeonLukas/Obsidian2Kindle)) which converts it to a .mobi File and sends it via Email to your Kindle. If you are not hosting on your own, you'll sent Data to my Server. Please be aware of this. I won't save or read your Data!
 
 ### To Do's:
 - [x] Export Images
