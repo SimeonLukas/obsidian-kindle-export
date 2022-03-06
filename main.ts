@@ -77,7 +77,7 @@ export default class Kindle extends Plugin {
 				let backend = this.settings.backend;
 				if (host == "" || port == "" || pass == "" || kindlemail == "" || sendmail == "" || author == "" || user == "" || backend == "") {
 					if (lang == "de") {
-					new Notice("Bitte geben Sie alle Einstellungen ein.");
+					new Notice("Bitte ergänze die Einstellungen.");
 					}
 					else {
 					new Notice("Please fill in the settings!");
