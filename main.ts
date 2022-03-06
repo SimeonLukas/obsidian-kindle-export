@@ -144,10 +144,15 @@ export default class Kindle extends Plugin {
           if (dateiname != null) {
         //   console.log(dateiname[1]);
           let anker = dateiname[1].split("#");
+		  let datei = anker[0];
+		  if (anker[0].contains("/")) {
+			  let path = anker[0].split("/");
+			  datei = path[path.length - 1];
+		  }
           let files = this.app.vault.getFiles().length;
           for (let i = 0; i < files; i++) {
             let file = this.app.vault.getFiles()[i];
-            if (file.name == dateiname[1] && file.extension != "md") {
+            if (file.name == dateiname[1] || file.name == datei && file.extension != "md") {
               let data = await this.app.vault.readBinary(file);
               let base64 = Buffer.from(data).toString('base64');
               imagename.push(file.name);
@@ -155,7 +160,7 @@ export default class Kindle extends Plugin {
               Inhalt += '\n<p><img class="image" src="uploads/' + file.name + '"></p>' + '\n';
             //   console.log('Bild wurde hinzugefügt!');
             }
-            if (file.name == anker[0] + '.md' || file.name == dateiname[1] + '.md') {
+            if (file.name == anker[0] + '.md' ||  file.name == dateiname[1] + '.md' || file.name == datei + '.md') {
               let data = await this.app.vault.read(file);
               text = Buffer.from(data).toString('utf8');
               for (let i = 1; i < anker.length; i++) {
