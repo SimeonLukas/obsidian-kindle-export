@@ -18,7 +18,7 @@ I was using Calibre and Pandoc-Export Plugin, but I was wondering about a short 
 - [x] ```&&Excludes&&``` are invisible
 - [x] External Links
 - [ ] External embedded Files
-- [ ] Exclude Metadata
+- [x] Exclude Metadata
 - [ ] Foldercover or Filecover
 - [ ] .html Export (Archive)
 - [ ] .epub Export (Pocketbook)
