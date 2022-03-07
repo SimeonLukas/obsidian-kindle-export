@@ -84,7 +84,6 @@ export default class Kindle extends Plugin {
 					}
 					return;
 				}
-				// console.log(datei);
 				if (lang == "de") {
 					new Notice('😃 Dein Dokument ' + datei + ' wird nun exportiert.');
 				} else {
@@ -119,7 +118,6 @@ export default class Kindle extends Plugin {
 					})
 					.then(function (body) {
 						new Notice(body);
-						// console.log(body);
 					});
 			}
 		});
@@ -145,7 +143,7 @@ export default class Kindle extends Plugin {
 					links.shift();
 				
 			
-				if (file.extension != "md") {
+				if (file.extension == "png" || file.extension == "jpg" || file.extension == "jpeg" || file.extension == "gif") {
 					let data = await this.app.vault.readBinary(file);
 					let base64 = Buffer.from(data).toString('base64');
 					imagename.push(file.name);
@@ -157,7 +155,11 @@ export default class Kindle extends Plugin {
 					let links2 : Array < string > = [];		
 					let data = await this.app.vault.read(file);
 					text = Buffer.from(data).toString('utf8');
-					
+					if (text.startsWith('---')) {
+						let start = text.indexOf('---');
+						let end = text.indexOf('---', start + 3);
+						text = text.substring(end + 3);
+					}
 					let anker = LinkFile.reference.link.split('#');
 					
 					anker = anker[anker.length - 1];
@@ -169,9 +171,11 @@ export default class Kindle extends Plugin {
 							text = text.substring(text.lastIndexOf("\n"));
 						} else {
 							let pos = text.indexOf(anker);
-							
+							if (pos == -1) {
+								text = text.substring(pos);
+							}else{
 							text = text.substring(pos + anker.length);
-							
+							}
 							let pos2 = text.indexOf('\n#', 30);
 							if (pos2 == -1) {
 							}
