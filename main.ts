@@ -137,7 +137,7 @@ export default class Kindle extends Plugin {
 		for (let i = 0; i < lines.length; i++) {
 				let text = lines[i];
 				
-					if (text.contains('![[') && text.contains(']]') || text.contains('![') && text.contains(')'))   {
+					if (text.contains('![[') && text.contains(']]') || text.contains('![') && text.contains(')') !&& text.contains('http://') !&& text.contains('https://')) {'))   {
 					let LinkFile = links[0];
 					let file = LinkFile.resolvedFile;
 					links.shift();
