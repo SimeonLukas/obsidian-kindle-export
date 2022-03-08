@@ -2,11 +2,15 @@ import {
 	Buffer
 } from "./node_modules/buffer";
 import {
+	normalizePath,
 	Plugin,
+	request,
 } from "obsidian";
 import {
 	KindleSettingTab
 } from "./settings";
+import { ClientRequest } from "http";
+import { normalize } from "path/posix";
 
 
 
@@ -148,7 +152,7 @@ export default class Kindle extends Plugin {
 					let base64 = Buffer.from(data).toString('base64');
 					imagename.push(file.name);
 					imagelist.push(base64);
-					Inhalt += '\n<p><img class="image" src="uploads/' + file.name + '"></p>' + '\n';
+					Inhalt += '\n<p><img class="intern" src="uploads/' + file.name + '"></p>' + '\n';
 				}
 
 				if (file.extension == 'md') {
@@ -204,7 +208,16 @@ export default class Kindle extends Plugin {
 					
 				}
 
-			} else {
+			} 
+			// if (text.contains('![') && text.contains(')') && text.contains('http://')) {
+			// // get text between ()
+			// console.log('EXTERN');
+			// Inhalt += text + "\n";	
+		
+			// 	}
+			
+			
+			else {
 				Inhalt += text + "\n";	
 			}
 
