@@ -19,6 +19,7 @@ I was using Calibre and Pandoc-Export Plugin, but I was wondering about a short 
 - [x] External Links
 - [ ] External embedded Files
 - [x] Exclude Metadata
+- [ ] Fix Error by external Images
 - [ ] Foldercover or Filecover
 - [ ] .html Export (Archive)
 - [ ] .epub Export (Pocketbook)
