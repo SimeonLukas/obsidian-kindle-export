@@ -137,13 +137,13 @@ export default class Kindle extends Plugin {
 		for (let i = 0; i < lines.length; i++) {
 				let text = lines[i];
 				
-					if (text.contains('![[') && text.contains(']]') || text.contains('![') && text.contains(')') !&& text.contains('http://') !&& text.contains('https://')) {'))   {
+					if (text.contains('![[') && text.contains(']]') || text.contains('![') && text.contains(')') !&& text.contains('http://') !&& text.contains('https://')) {
 					let LinkFile = links[0];
 					let file = LinkFile.resolvedFile;
 					links.shift();
 				
 			
-				if (file.extension == "png" || file.extension == "jpg" || file.extension == "jpeg" || file.extension == "gif") {
+				if (file.extension == "png" || file.extension == "jpg" || file.extension == "jpeg" || file.extension == "gif" || file.extension == "svg" || file.extension == "bmp") {
 					let data = await this.app.vault.readBinary(file);
 					let base64 = Buffer.from(data).toString('base64');
 					imagename.push(file.name);
@@ -161,14 +161,16 @@ export default class Kindle extends Plugin {
 						text = text.substring(end + 3);
 					}
 					let anker = LinkFile.reference.link.split('#');
-					
 					anker = anker[anker.length - 1];
-					
+					let heading = '<h3><i>' + LinkFile.reference.displayText + '</i></h3>\n';
+
 					if (anker != undefined) {
 						if (anker.contains("^")) {
-							let ankercaret = text.indexOf(anker[i]);
+							console.log(anker);
+							let ankercaret = text.indexOf(anker);
 							text = text.substring(0, ankercaret);
 							text = text.substring(text.lastIndexOf("\n"));
+							heading = '';
 						} else {
 							let pos = text.indexOf(anker);
 							if (pos == -1) {
@@ -184,7 +186,7 @@ export default class Kindle extends Plugin {
 							}
 						}
 					}
-					text = '<h3><i>' + LinkFile.reference.displayText + '</i></h3>\n' + text;
+					text = heading + text;
 			
 					let AllLinks2 = this.app.fileManager.getAllLinkResolutions();
 					for (let i = 0; i < AllLinks2.length; i++) {
