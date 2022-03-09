@@ -9,8 +9,12 @@ import {
 import {
 	KindleSettingTab
 } from "./settings";
-import { ClientRequest } from "http";
-import { normalize } from "path/posix";
+import {
+	ClientRequest
+} from "http";
+import {
+	normalize
+} from "path/posix";
 
 
 
@@ -139,14 +143,15 @@ export default class Kindle extends Plugin {
 
 	async GetEbook(lines: string[], Inhalt: string, imagelist: string[], imagename: string[], links: Array < string > ) {
 		for (let i = 0; i < lines.length; i++) {
-				let text = lines[i];
-				
-					if (text.contains('![[') && text.contains(']]') || text.contains('![') && text.contains(')') !&& text.contains('http://') !&& text.contains('https://')) {
-					let LinkFile = links[0];
-					let file = LinkFile.resolvedFile;
-					links.shift();
-				
-			
+			let text = lines[i];
+
+
+			if (text.contains('![[') && text.contains(']]') || text.contains('![') && text.contains(')') ! && text.contains('http://') ! && text.contains('https://')) {
+				let LinkFile = links[0];
+				let file = LinkFile.resolvedFile;
+				links.shift();
+
+
 				if (file.extension == "png" || file.extension == "jpg" || file.extension == "jpeg" || file.extension == "gif" || file.extension == "svg" || file.extension == "bmp") {
 					let data = await this.app.vault.readBinary(file);
 					let base64 = Buffer.from(data).toString('base64');
@@ -156,7 +161,7 @@ export default class Kindle extends Plugin {
 				}
 
 				if (file.extension == 'md') {
-					let links2 : Array < string > = [];		
+					let links2: Array < string > = [];
 					let data = await this.app.vault.read(file);
 					text = Buffer.from(data).toString('utf8');
 					if (text.startsWith('---')) {
@@ -179,49 +184,50 @@ export default class Kindle extends Plugin {
 							let pos = text.indexOf(anker);
 							if (pos == -1) {
 								text = text.substring(pos);
-							}else{
-							text = text.substring(pos + anker.length);
+							} else {
+								text = text.substring(pos + anker.length);
 							}
 							let pos2 = text.indexOf('\n#', 30);
-							if (pos2 == -1) {
-							}
-							else{
-							text = text.substring(0, pos2);
+							if (pos2 == -1) {} else {
+								text = text.substring(0, pos2);
 							}
 						}
 					}
 					text = heading + text;
-			
+
 					let AllLinks2 = this.app.fileManager.getAllLinkResolutions();
 					for (let i = 0; i < AllLinks2.length; i++) {
 						if (AllLinks2[i].sourceFile.path == file.path) {
 							links2.push(AllLinks2[i]);
-							
+
 						}
 					}
 					let lines2 = text.split("\n");
-				
+
 					let nextmd = await this.GetEbook(lines2, Inhalt, imagelist, imagename, links2);
 					Inhalt = nextmd.Inhalt;
-					        
+
 				} else {
-					
+
 				}
 
-			} 
-			// if (text.contains('![') && text.contains(')') && text.contains('http://')) {
-			// // get text between ()
-			// console.log('EXTERN');
-			// Inhalt += text + "\n";	
-		
-			// 	}
-			
-			
-			else {
-				Inhalt += text + "\n";	
+
+
+			} else {
+				
+				
+				if (text.contains('![') && text.contains(')') && text.contains('http://') || text.contains('![') && text.contains(')') && text.contains('https://')) {
+					// get text between ()
+					console.log('EXTERN');
+					let ImageLink = text.substring(text.indexOf('(') + 1, text.indexOf(')'));
+					Inhalt += '<img class="extern" src="' + ImageLink + '"> \n';
+				} else {
+
+					Inhalt += text + "\n";
+				}
 			}
 
-		
+
 		}
 
 		return {
