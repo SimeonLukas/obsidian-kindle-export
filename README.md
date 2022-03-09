@@ -17,9 +17,8 @@ I was using Calibre and Pandoc-Export Plugin, but I was wondering about a short 
 - [x] ```<div style="page-break-after: always;"></div>``` Working
 - [x] ```&&Excludes&&``` are invisible
 - [x] External Links
-- [ ] External embedded Files
+- [x] External embedded Images
 - [x] Exclude Metadata
-- [ ] Fix Error by external Images
 - [ ] Foldercover or Filecover
 - [ ] .html Export (Archive)
 - [ ] .epub Export (Pocketbook)
