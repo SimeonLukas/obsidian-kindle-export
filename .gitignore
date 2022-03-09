@@ -6,3 +6,10 @@ node_modules/
 data.json
 *.xcf
 .npmrc
+.editorconfig
+.eslintignore
+.eslintrc
+*.mjs
+tsconfig.json
+version-bump.mjs
+package-lock.json
