@@ -122,7 +122,11 @@ export default class Kindle extends Plugin {
 					})
 					.then(function (body) {
 						new Notice(body);
+					})
+					.catch(function() {
+						new Notice("❌ Internet Connection error or Server is offline");
 					});
+
 			}
 		});
 
@@ -216,7 +220,7 @@ export default class Kindle extends Plugin {
 					// get text between ()
 					console.log('EXTERN');
 					let ImageLink = text.substring(text.indexOf('(') + 1, text.indexOf(')'));
-					Inhalt += '<img class="extern" src="' + ImageLink + '"> \n';
+					Inhalt += '<p><img class="extern" src="' + ImageLink + '"></p> \n';
 				} else {
 
 					Inhalt += text + "\n";
