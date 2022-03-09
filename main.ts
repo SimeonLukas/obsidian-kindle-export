@@ -65,7 +65,7 @@ export default class Kindle extends Plugin {
 						links.push(AllLinks[i]);
 					}
 				}
-				let data = await this.app.vault.read(dokument)
+				let data = await this.app.vault.cachedRead(dokument)
 				if (data.startsWith('---')) {
 					let start = data.indexOf('---');
 					let end = data.indexOf('---', start + 3);

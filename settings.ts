@@ -15,7 +15,7 @@ export class KindleSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     containerEl.createEl("h1", { text: "Kindle Settings" });
-    containerEl.createEl("p", { text: "Set your data for your Kindle. Use your Mailadress wich is approved by Amazon." });
+    containerEl.createEl("p", { text: "Set your data for your Kindle. Use your Mailadress which is approved by Amazon." });
 
 
     new Setting(containerEl)
@@ -148,6 +148,9 @@ export class KindleSettingTab extends PluginSettingTab {
             console.log(this.plugin.settings);
           })
       );
+
+      containerEl.createEl("hr");
+      containerEl.createEl("a", { text: "I 💛 ☕", href: "https://www.buymeacoffee.com/simeonlukas"});
 
 
 
