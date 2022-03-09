@@ -1,10 +1,10 @@
 # Project 2: obsidian-kindle-export 
 ## An Obsidian-Plugin which sends your Notes to your Kindle as .mobi File
-![](files/screenrecord.gif)
+![](https://github.com/SimeonLukas/obsidian-kindle-export/raw/main/files/screenrecord.gif)
 
-[This is the exported .mobi File](files/Export-Test.mobi)
+[This is the exported .mobi File](https://github.com/SimeonLukas/obsidian-kindle-export/blob/main/files/Export-Test.mobi)
 
-![](files/ebook.jpg)
+![](https://github.com/SimeonLukas/obsidian-kindle-export/raw/main/files/ebook.jpg)
 
 ### Introduction
 I was using Calibre and Pandoc-Export Plugin, but I was wondering about a short way to Export your .md Files in one Command and add all embedded Files. So you dont have to use a .pdf File. The Plugin creates a *Kindle: Export* Command, which sends all embedded Images and .md Files to a PHP Backend ([Host your own private PHP Backend!](https://github.com/SimeonLukas/Obsidian2Kindle)) which converts it to a .mobi File and sends it via Email to your Kindle. If you are not hosting on your own, you are going to send Private-Data to my Server. Please be aware of this. I won't save or read your Data!
