@@ -5,7 +5,6 @@
 node_modules/
 data.json
 *.xcf
-.npmrc
 .editorconfig
 .eslintignore
 .eslintrc
