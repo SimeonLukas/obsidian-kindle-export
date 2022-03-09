@@ -1,20 +1,13 @@
 import {
 	Buffer
-} from "./node_modules/buffer";
+} from "./buffer";
 import {
-	normalizePath,
+	Notice,
 	Plugin,
-	request,
 } from "obsidian";
 import {
 	KindleSettingTab
 } from "./settings";
-import {
-	ClientRequest
-} from "http";
-import {
-	normalize
-} from "path/posix";
 
 
 
@@ -62,6 +55,10 @@ export default class Kindle extends Plugin {
 				let links: Array < string > = [];
 				let lang = localStorage.getItem("language");
 				let dokument = this.app.workspace.getActiveFile();
+				if (dokument == null) {
+					new Notice("❌ No active file. Please open a file first");
+					return;
+				}
 				let AllLinks = this.app.fileManager.getAllLinkResolutions();
 				for (let i = 0; i < AllLinks.length; i++) {
 					if (AllLinks[i].sourceFile.path == dokument.path) {
@@ -74,7 +71,6 @@ export default class Kindle extends Plugin {
 				Inhalt = result.Inhalt;
 				imagelist = result.imagelist;
 				imagename = result.imagename;
-				let datei = this.app.workspace.getActiveFile().basename;
 				let host = this.settings.smtphost;
 				let port = this.settings.port;
 				let pass = this.settings.pass;
@@ -93,9 +89,9 @@ export default class Kindle extends Plugin {
 					return;
 				}
 				if (lang == "de") {
-					new Notice('😃 Dein Dokument ' + datei + ' wird nun exportiert.');
+					new Notice('😃 Dein Dokument ' + dokument.basename + ' wird nun exportiert.');
 				} else {
-					new Notice('😃 Your Note ' + datei + ' is being converted to an ebook');
+					new Notice('😃 Your Note ' + dokument.basename + ' is being converted to an ebook');
 				}
 				var url = this.settings.backend;
 				var formData = new FormData();
@@ -108,7 +104,7 @@ export default class Kindle extends Plugin {
 				formData.append('lang', lang);
 				formData.append('Bilder', imagename);
 				formData.append('text', Inhalt);
-				formData.append('title', datei);
+				formData.append('title', dokument.basename);
 				formData.append('author', author);
 				formData.append('email', sendmail);
 				formData.append('kindle', kindlemail);
@@ -162,7 +158,7 @@ export default class Kindle extends Plugin {
 
 				if (file.extension == 'md') {
 					let links2: Array < string > = [];
-					let data = await this.app.vault.read(file);
+					let data = await this.app.vault.cachedRead(file);
 					text = Buffer.from(data).toString('utf8');
 					if (text.startsWith('---')) {
 						let start = text.indexOf('---');
