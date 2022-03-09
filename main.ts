@@ -69,7 +69,7 @@ export default class Kindle extends Plugin {
 				if (data.startsWith('---')) {
 					let start = data.indexOf('---');
 					let end = data.indexOf('---', start + 3);
-					text = data.substring(end + 3);
+					data = data.substring(end + 3);
 				}
 				let lines = data.split("\n")
 				let result = await this.GetEbook(lines, Inhalt, imagelist, imagename, links);
