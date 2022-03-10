@@ -19,6 +19,7 @@ I was using Calibre and Pandoc-Export Plugin, but I was wondering about a short 
 - [x] External Links
 - [x] External embedded Images
 - [x] Exclude Metadata
+- [x] Become a Community-Plugin 🎉 
  - [ ] Fix Issue with skipping Entries
 - [ ] Foldercover or Filecover
 - [ ] .html Export (Archive)
