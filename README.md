@@ -14,7 +14,7 @@ I was using Calibre and Pandoc-Export Plugin, but I was wondering about a short 
 - [x] Export embedded .md Files
 - [x] Obsidian Cover for the Books
 - [x] Table of Contents *beta*
-- [x] ```<div style="page-break-after: always;"></div>``` Working
+- [x] ```<div style="page-break-after: always;"></div>``` is working
 - [x] ```&&Excludes&&``` are invisible
 - [x] External Links
 - [x] External embedded Images
