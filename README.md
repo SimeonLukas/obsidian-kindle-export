@@ -1,5 +1,5 @@
 # Project 2: obsidian-kindle-export 
-## An Obsidian-Plugin which sends your notes to your Kindle as .mobi file
+## An Obsidian-plugin which sends your notes to your Kindle as .mobi file
 ![](https://github.com/SimeonLukas/obsidian-kindle-export/raw/main/files/screenrecord.gif)
 
 [This is the exported .mobi File](https://github.com/SimeonLukas/obsidian-kindle-export/blob/main/files/Export-Test.mobi)
@@ -7,7 +7,7 @@
 ![](https://github.com/SimeonLukas/obsidian-kindle-export/raw/main/files/ebook.jpg)
 
 ### Introduction
-I was using Calibre and Pandoc-Export Plugin, but I was wondering about a short way to export your .md files in one command and add all embedded files. So you dont have to use a .pdf file. The Plugin creates a *Kindle: Export* command, which sends all embedded images and .md files to a PHP backend ([Host your own private PHP Backend!](https://github.com/SimeonLukas/Obsidian2Kindle)) which converts it to a .mobi file and sends it via email to your Kindle. If you are not hosting on your own, you will send private data to my server. Please be aware of this. I won't save or read your data!
+I was using Calibre and Pandoc-Export plugin, but I was wondering about a short way to export your .md files in one command and add all embedded files. So you dont have to use a .pdf file. The plugin creates a *Kindle: Export* command, which sends all embedded images and .md files to a PHP backend ([Host your own private PHP Backend!](https://github.com/SimeonLukas/Obsidian2Kindle)) which converts it to a .mobi file and sends it via email to your Kindle. If you are not hosting on your own, you will send private data to my server. Please be aware of this. I won't save or read your data!
 
 ### To Do's:
 - [x] Export images
@@ -19,7 +19,7 @@ I was using Calibre and Pandoc-Export Plugin, but I was wondering about a short 
 - [x] External links
 - [x] External embedded images
 - [x] Exclude metadata
-- [x] Become a Community-Plugin 🎉 
+- [x] Become a Communityplugin 🎉 
  - [ ] Fix issue with skipping entries
 - [ ] Foldercover or filecover
 - [ ] .html export (Archive)
