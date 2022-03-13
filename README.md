@@ -2,7 +2,7 @@
 ## An Obsidian-plugin which sends your notes to your Kindle as .mobi file
 ![](https://github.com/SimeonLukas/obsidian-kindle-export/raw/main/files/screenrecord.gif)
 
-[This is the exported .mobi File](https://github.com/SimeonLukas/obsidian-kindle-export/blob/main/files/Export-Test.mobi)
+[This is the exported .mobi file](https://github.com/SimeonLukas/obsidian-kindle-export/blob/main/files/Export-Test.mobi)
 
 ![](https://github.com/SimeonLukas/obsidian-kindle-export/raw/main/files/ebook.jpg)
 
@@ -20,7 +20,7 @@ I was using Calibre and Pandoc-Export plugin, but I was wondering about a short 
 - [x] External embedded images
 - [x] Exclude metadata
 - [x] Become a Communityplugin 🎉 
- - [ ] Fix issue with skipping entries
+ - [ ] Create workaround for other embedded files
 - [ ] Foldercover or filecover
 - [ ] .html export (Archive)
 - [ ] .epub export (Pocketbook)
@@ -29,6 +29,8 @@ I was using Calibre and Pandoc-Export plugin, but I was wondering about a short 
 ### Just try it!
 Fill in your data for your Kindle and your mailadress.
 Read your notes on your Kindle.
+
+If you have problems with the plugin, please let me know.
 
 <a href="https://www.buymeacoffee.com/simeonlukas" target="_blank" ><img src="https://github.com/SimeonLukas/obsidian-kindle-export/raw/main/files/coffee.jpg" width="75%"></a>
 
