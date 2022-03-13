@@ -55,8 +55,8 @@ export default class Kindle extends Plugin {
 				let links: Array < string > = [];
 				let lang = localStorage.getItem("language");
 				let dokument = this.app.workspace.getActiveFile();
-				if (dokument == null) {
-					new Notice("❌ No active file. Please open a file first");
+				if (dokument == null || dokument.extension != "md") {
+					new Notice("❌ No active .md file. Please open a .md file first!");
 					return;
 				}
 				let AllLinks = this.app.fileManager.getAllLinkResolutions();
@@ -155,6 +155,7 @@ export default class Kindle extends Plugin {
 				let LinkFile = links[0];
 				let file = LinkFile.resolvedFile;
 				links.shift();
+				// Für nächstes Update achte auf lokale Verlinkungen ohne Einbettung!!!
 
 
 				if (file.extension == "png" || file.extension == "jpg" || file.extension == "jpeg" || file.extension == "gif" || file.extension == "svg" || file.extension == "bmp") {
