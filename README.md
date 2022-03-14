@@ -27,8 +27,9 @@ I was using Calibre and Pandoc-Export plugin, but I was wondering about a short 
 - [ ] .pdf export (would be nice for IOS & Android)
 
 ### Just try it!
-For embedding local pictures, please use the following format:
+For embedding local images, please use the following format:
 ``` ![[image.jpg]] ```
+
 Fill in your data for your Kindle and your mailadress.
 Read your notes on your Kindle.
 
