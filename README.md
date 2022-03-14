@@ -21,6 +21,7 @@ I was using Calibre and Pandoc-Export plugin, but I was wondering about a short 
 - [x] Exclude metadata
 - [x] Become a Communityplugin 🎉 
  - [x] Create workaround for other embedded files
+ - [ ] Add ==highlighting==
 - [ ] Foldercover or filecover
 - [ ] .html export (Archive)
 - [ ] .epub export (Pocketbook)
