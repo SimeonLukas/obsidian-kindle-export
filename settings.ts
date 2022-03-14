@@ -14,8 +14,8 @@ export class KindleSettingTab extends PluginSettingTab {
 
     containerEl.empty();
 
-    containerEl.createEl("h1", { text: "Kindle Settings" });
-    containerEl.createEl("p", { text: "Set your data for your Kindle. Use your Mailadress which is approved by Amazon." });
+    containerEl.createEl("h1", { text: "Kindle settings" });
+    containerEl.createEl("p", { text: "Set your data for your Kindle. Use your email which is approved by Amazon." });
 
 
     new Setting(containerEl)
@@ -47,8 +47,8 @@ export class KindleSettingTab extends PluginSettingTab {
       );
 
       new Setting(containerEl)
-      .setName("Kindle Email")
-      .setDesc("Your Kindle Email")
+      .setName("Kindlemail")
+      .setDesc("Your Kindle email")
       .addText((text) =>
         text
           .setPlaceholder("you@kindle.com")
@@ -62,7 +62,7 @@ export class KindleSettingTab extends PluginSettingTab {
 
       new Setting(containerEl)
       .setName("SMTP Host")
-      .setDesc("Your SMTP Host (e.g. smtp.gmail.com)")
+      .setDesc("Your SMTP host (e.g. smtp.gmail.com)")
       .addText((text) =>
         text
           .setPlaceholder("smtp.obsidian.md")
@@ -76,7 +76,7 @@ export class KindleSettingTab extends PluginSettingTab {
 
       new Setting(containerEl)
       .setName("SMTP Port")
-      .setDesc("Your SMTP Port (e.g. 587)")
+      .setDesc("Your SMTP port (e.g. 587)")
       .addText((text) =>
         text
           .setPlaceholder("465")
@@ -89,7 +89,7 @@ export class KindleSettingTab extends PluginSettingTab {
       );
       new Setting(containerEl)
       .setName("SMTP User")
-      .setDesc("Username for your SMTP Server e.g. your Mailadress")
+      .setDesc("Username for your SMTP server e.g. your Mailadress")
       .addText((text) =>
         text
           .setPlaceholder("you@obsidian.md")
@@ -105,7 +105,7 @@ export class KindleSettingTab extends PluginSettingTab {
 
       new Setting(containerEl)
       .setName("SMTP Password")
-      .setDesc("Your SMTP Password")
+      .setDesc("Your SMTP password")
       .addText((text) =>
         text
           .setPlaceholder("********")
@@ -119,7 +119,7 @@ export class KindleSettingTab extends PluginSettingTab {
 
       new Setting(containerEl)
       .setName("Backend")
-      .setDesc("Your Backendadress (e.g. https://staneks.de/apps/md2mobi/) can be used for free or host your own Backend.")
+      .setDesc("Your backendadress (e.g. https://staneks.de/apps/md2mobi/) can be used for free or host your own Backend.")
       .addText((text) =>
         text
           .setPlaceholder("https://ob2ki.com")
@@ -130,6 +130,20 @@ export class KindleSettingTab extends PluginSettingTab {
             console.log(this.plugin.settings);
           })
       );
+
+      new Setting(containerEl)
+      .setName("Pagebreak by '---'")
+      .setDesc("Suggested feature: Activate pagebreak by '---'")
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.plugin.settings.pagebreak)
+          .onChange(async (value) => {
+            this.plugin.settings.pagebreak = value;
+            await this.plugin.saveSettings();
+            console.log(this.plugin.settings);
+          })
+      );
+
       containerEl.createEl("hr");
       containerEl.createEl("p", { text: "Host your own Obsidian2Kindle-Converter."});
       containerEl.createEl("a", { text: "Fork from Github 🔗", href: "https://github.com/SimeonLukas/Obsidian2Kindle"});
@@ -150,7 +164,7 @@ export class KindleSettingTab extends PluginSettingTab {
       );
 
       containerEl.createEl("hr");
-      containerEl.createEl("a", { text: "I 💛 ☕", href: "https://www.buymeacoffee.com/simeonlukas"});
+      containerEl.createEl("a", { text: "Buy me a ☕", href: "https://www.buymeacoffee.com/simeonlukas"});
 
 
 

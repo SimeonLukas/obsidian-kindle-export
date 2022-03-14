@@ -71,16 +71,18 @@ export default class Kindle extends Plugin {
 					let end = data.indexOf('---', start + 3);
 					data = data.substring(end + 3);
 				}
-				// delete unused text
-				data = data.replace(/%%[\s\S]*?%%/g, "");
-				data = data.replace(/```dataviewjs[\s\S]*?```/g, "");
-		
-
 				let lines = data.split("\n")
 				let result = await this.GetEbook(lines, Inhalt, imagelist, imagename, links);
 				Inhalt = result.Inhalt;
 				imagelist = result.imagelist;
 				imagename = result.imagename;
+				Inhalt = Inhalt.replace(/%%[\s\S]*?%%/g, "");
+				Inhalt = Inhalt.replace(/```dataviewjs[\s\S]*?```/g, "");
+				if (this.settings.pagebreak == true) {
+					// replace ---\n
+					Inhalt = Inhalt.replace(/---/g, '<p><div style="page-break-after: always;"></div></p>');}
+					else{
+					} 
 				let host = this.settings.smtphost;
 				let port = this.settings.port;
 				let pass = this.settings.pass;
@@ -151,17 +153,48 @@ export default class Kindle extends Plugin {
 		await this.saveData(this.settings);
 	}
 
+
+	async getFile(text: string, links: Array < string > ) {
+		if (text.contains("![[") && text.contains("]]")) {
+		let start = text.indexOf('![[');
+		let end = text.indexOf(']]', start + 3);
+		let name = text.substring(start + 3, end);
+		name = "![[" + name + "]]";
+		console.log(name);
+		for (let i = 0; i < links.length; i++) {
+			if (links[i].reference.original == name) {
+				console.log(links[i].reference.original);
+				var file = links[i];
+				return file;
+			}
+			else{
+				console.log("nicht gefunden");
+			}
+		}
+
+	}
+	else {
+		if (lang == "de") {
+			new Notice('❌ Dein Dokument enthält unaufgelöste Dateien. Bitte korrigiere das!');
+		} else {
+			new Notice('❌ Your document contains unresolved files. Please fix it!');
+		}
+
+		return null;
+	}
+}
+
 	async GetEbook(lines: string[], Inhalt: string, imagelist: string[], imagename: string[], links: Array < string > ) {
 		for (let i = 0; i < lines.length; i++) {
 			let text = lines[i];
+			
 
-
+			
 			if (text.contains('![[') && text.contains(']]') || text.contains('![') && text.contains(')') !&& text.contains('http://') !&& text.contains('https://')) {
-				let LinkFile = links[0];
-				let file = LinkFile.resolvedFile;
-				links.shift();
-				// Für nächstes Update achte auf lokale Verlinkungen ohne Einbettung!!!
 
+				let file = await this.getFile(text, links);
+				let LinkFile = file;
+				file = file.resolvedFile;
 
 				if (file.extension == "png" || file.extension == "jpg" || file.extension == "jpeg" || file.extension == "gif" || file.extension == "svg" || file.extension == "bmp") {
 					let data = await this.app.vault.readBinary(file);
@@ -179,11 +212,7 @@ export default class Kindle extends Plugin {
 						let start = text.indexOf('---');
 						let end = text.indexOf('---', start + 3);
 						text = text.substring(end + 3);
-					}
-					// delete unused text
-					text= text.replace(/%%[\s\S]*?%%/g, "");
-					text = text.replace(/```dataviewjs[\s\S]*?```/g, "");
-						
+					}		
 
 
 					let anker = LinkFile.reference.link.split('#');
@@ -232,17 +261,21 @@ export default class Kindle extends Plugin {
 
 			} else {
 				
-				
 				if (text.contains('![') && text.contains(')') && text.contains('http://') || text.contains('![') && text.contains(')') && text.contains('https://')) {
 					// get text between ()
 					console.log('EXTERN');
 					let ImageLink = text.substring(text.indexOf('(') + 1, text.indexOf(')'));
 					Inhalt += '<p><img class="extern" src="' + ImageLink + '"></p> \n';
-				} else {
-
+				} 
+				
+			
+				
+				else{
 					Inhalt += text + "\n";
 				}
 			}
+		
+		
 
 
 		}
