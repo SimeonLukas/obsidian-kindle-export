@@ -15,7 +15,7 @@ I was using Calibre and Pandoc-Export plugin, but I was wondering about a short 
 - [x] Obsidian cover for the books
 - [x] Table of contents *beta*
 - [x] ```<div style="page-break-after: always;"></div>``` is working
-- [x] ```&&Excludes&&``` are invisible
+- [x] ```%%Excludes%%``` are invisible
 - [x] External links
 - [x] External embedded images
 - [x] Exclude metadata
