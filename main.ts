@@ -71,6 +71,11 @@ export default class Kindle extends Plugin {
 					let end = data.indexOf('---', start + 3);
 					data = data.substring(end + 3);
 				}
+				// delete unused text
+				data = data.replace(/%%[\s\S]*?%%/g, "");
+				data = data.replace(/```dataviewjs[\s\S]*?```/g, "");
+		
+
 				let lines = data.split("\n")
 				let result = await this.GetEbook(lines, Inhalt, imagelist, imagename, links);
 				Inhalt = result.Inhalt;
@@ -175,6 +180,12 @@ export default class Kindle extends Plugin {
 						let end = text.indexOf('---', start + 3);
 						text = text.substring(end + 3);
 					}
+					// delete unused text
+					text= text.replace(/%%[\s\S]*?%%/g, "");
+					text = text.replace(/```dataviewjs[\s\S]*?```/g, "");
+						
+
+
 					let anker = LinkFile.reference.link.split('#');
 					anker = anker[anker.length - 1];
 					let heading = '<h3><i>' + LinkFile.reference.displayText + '</i></h3>\n';
