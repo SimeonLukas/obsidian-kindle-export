@@ -78,9 +78,10 @@ export default class Kindle extends Plugin {
 				imagename = result.imagename;
 				Inhalt = Inhalt.replace(/%%[\s\S]*?%%/g, "");
 				Inhalt = Inhalt.replace(/```dataviewjs[\s\S]*?```/g, "");
+				Inhalt = Inhalt.replace(/==[\s\S]*?==/g, "<u>$&</u>");
+				Inhalt = Inhalt.replace(/==/g, "");
 				if (this.settings.pagebreak == true) {
-					// replace ---\n
-					Inhalt = Inhalt.replace(/---/g, '<p><div style="page-break-after: always;"></div></p>');}
+					Inhalt = Inhalt.replace(/---/g, '---\n<p><div style="page-break-after: always;"></div></p>');}
 					else{
 					} 
 				let host = this.settings.smtphost;
