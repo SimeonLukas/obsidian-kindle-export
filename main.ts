@@ -110,6 +110,8 @@ export default class Kindle extends Plugin {
 				var formData = new FormData();
 				for (let i = 0; i < imagelist.length; i++) {
 					formData.append('file' + i, imagelist[i]);
+					console.log(imagename[i]);
+					console.log(imagelist[i]);
 				}
 				// Coverbild toDo
 				// formData.append('cover', base64cover);
@@ -126,7 +128,7 @@ export default class Kindle extends Plugin {
 				formData.append('pass', pass);
 				formData.append('user', user);
 				formData.append('toc', toc);
-				fetch(url, {
+				await fetch(url, {
 						method: 'POST',
 						body: formData,
 					})
