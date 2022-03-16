@@ -218,11 +218,12 @@ export default class Kindle extends Plugin {
 					}		
 
 
-					let anker = LinkFile.reference.link.split('#');
-					anker = anker[anker.length - 1];
+					let ankers = LinkFile.reference.link.split('#');
+					console.log(ankers);
+					let anker = ankers[ankers.length - 1];
 					let heading = '<h3><i>' + LinkFile.reference.displayText + '</i></h3>\n\n';
 
-					if (anker != undefined) {
+					if (ankers.length > 1) {
 						if (anker.contains("^")) {
 							console.log(anker);
 							let ankercaret = text.indexOf(anker);
