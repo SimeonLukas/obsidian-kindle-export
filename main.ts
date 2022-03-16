@@ -81,7 +81,7 @@ export default class Kindle extends Plugin {
 				Inhalt = Inhalt.replace(/==[\s\S]*?==/g, "<u>$&</u>");
 				Inhalt = Inhalt.replace(/==/g, "");
 				if (this.settings.pagebreak == true) {
-					Inhalt = Inhalt.replace(/---/g, '---\n<p><div style="page-break-after: always;"></div></p>');}
+					Inhalt = Inhalt.replace(/---/g, '---\n<p><div style="page-break-after: always;"></div></p>\n');}
 					else{
 					} 
 				let host = this.settings.smtphost;
@@ -139,7 +139,7 @@ export default class Kindle extends Plugin {
 						new Notice(body);
 					})
 					.catch(function() {
-						new Notice("❌ Internet Connection error or Server is offline");
+						new Notice("❌ Internetconnection error or Server is offline");
 					});
 
 			}
@@ -204,7 +204,7 @@ export default class Kindle extends Plugin {
 					let base64 = Buffer.from(data).toString('base64');
 					imagename.push(file.name);
 					imagelist.push(base64);
-					Inhalt += '\n<p><img class="intern" src="uploads/' + file.name + '"></p>' + '\n';
+					Inhalt += '\n<p><img class="intern" src="uploads/' + file.name + '"></p>' + '\n\n';
 				}
 
 				if (file.extension == 'md') {
@@ -220,7 +220,7 @@ export default class Kindle extends Plugin {
 
 					let anker = LinkFile.reference.link.split('#');
 					anker = anker[anker.length - 1];
-					let heading = '<h3><i>' + LinkFile.reference.displayText + '</i></h3>\n';
+					let heading = '<h3><i>' + LinkFile.reference.displayText + '</i></h3>\n\n';
 
 					if (anker != undefined) {
 						if (anker.contains("^")) {
@@ -268,13 +268,13 @@ export default class Kindle extends Plugin {
 					// get text between ()
 					console.log('EXTERN');
 					let ImageLink = text.substring(text.indexOf('(') + 1, text.indexOf(')'));
-					Inhalt += '<p><img class="extern" src="' + ImageLink + '"></p> \n';
+					Inhalt += '<p><img class="extern" src="' + ImageLink + '"></p> \n\n';
 				} 
 				
 			
 				
 				else{
-					Inhalt += text + "\n";
+					Inhalt += text + " \n\n";
 				}
 			}
 		
