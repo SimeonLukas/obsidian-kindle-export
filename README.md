@@ -23,6 +23,7 @@ I was using Calibre and Pandoc-Export plugin, but I was wondering about a short 
 - [x] Become a Communityplugin 🎉 
  - [x] Create workaround for other embedded files
  - [x] Add ==highlighting==
+- [x] .md export _(mergedown)_
 - [ ] Foldercover or filecover
 - [ ] .html export (Archive)
 - [ ] .epub export (Pocketbook)
@@ -34,6 +35,11 @@ For embedding local images, please use the following format:
 
 Fill in your data for your Kindle and your mailadress.
 Read your notes on your Kindle.
+
+⭐Feature added:
+
+**Mergedown:**
+Combine all your embedded images and .md files in one .md file.
 
 If you have problems with the plugin, please let me know.
 
