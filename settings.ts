@@ -130,7 +130,9 @@ export class KindleSettingTab extends PluginSettingTab {
             console.log(this.plugin.settings);
           })
       );
-
+      containerEl.createEl("hr");
+      containerEl.createEl("h1", { text: "⭐ Suggested features" });
+     
       new Setting(containerEl)
       .setName("Pagebreak by '---'")
       .setDesc("Suggested feature: Activate pagebreak by '---'")
@@ -141,6 +143,21 @@ export class KindleSettingTab extends PluginSettingTab {
             this.plugin.settings.pagebreak = value;
             await this.plugin.saveSettings();
             console.log(this.plugin.settings);
+          })
+      );
+
+      new Setting(containerEl)
+      .setName("Markdown merge")
+      .setDesc("Suggested feature: Merge .md files into one file (adds Kindle: Mergedown command) Plugin reloads after saving.")
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.plugin.settings.mergedown)
+          .onChange(async (value) => {
+            this.plugin.settings.mergedown = value;
+            await this.plugin.saveSettings();
+            console.log(this.plugin.settings);
+            this.app.plugins.unloadPlugin('obsidian-kindle-export');
+            this.app.plugins.loadPlugin('obsidian-kindle-export');
           })
       );
 

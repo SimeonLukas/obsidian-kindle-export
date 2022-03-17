@@ -41,7 +41,45 @@ export default class Kindle extends Plugin {
 		await this.loadSettings();
 		this.addSettingTab(new KindleSettingTab(this.app, this));
 
+		if (this.settings.mergedown == true) {		
+		this.addCommand({
+			id: 'Mergedown',
+			name: 'Mergedown',
+			callback: async () => {
+				let Inhalt: string = "";
+				let imagelist: string[] = [];
+				let imagename: string[] = [];
+				let links: Array < string > = [];
+				let lang = localStorage.getItem("language");
+				let dokument = this.app.workspace.getActiveFile();
+				if (dokument == null || dokument.extension != "md") {
+					new Notice("❌ No active .md file. Please open a .md file first!");
+					return;
+				}
+				let AllLinks = this.app.fileManager.getAllLinkResolutions();
+				for (let i = 0; i < AllLinks.length; i++) {
+					if (AllLinks[i].sourceFile.path == dokument.path) {
+						links.push(AllLinks[i]);
+					}
+				}
+				let data = await this.app.vault.cachedRead(dokument)
+				let lines = data.split("\n")
+				let result = await this.Mergedown(lines, Inhalt, imagelist, imagename, links);
+				Inhalt = result.Inhalt;
+				// get time in milliseconds
+				let time = new Date().getTime();
+				this.app.vault.create(dokument.basename + '_mergedown_'+time+'.md', Inhalt);
+				if (lang == "de") {
+				new Notice("✔️ Mergedown erfolgreich!");
+				} else {
+				new Notice("✔️ Mergedown successful!");
+				}
 
+
+
+
+			}});
+		}
 
 
 
@@ -228,7 +266,7 @@ export default class Kindle extends Plugin {
 							console.log(anker);
 							let ankercaret = text.indexOf(anker);
 							text = text.substring(0, ankercaret);
-							text = text.substring(text.lastIndexOf("\n"));
+							text = text.substring(text.lastIndexOf("\n\n"));
 							heading = '';
 						} else {
 							let pos = text.indexOf(anker);
@@ -291,5 +329,115 @@ export default class Kindle extends Plugin {
 		};
 
 	}
+
+
+	async Mergedown(lines: string[], Inhalt: string, imagelist: string[], imagename: string[], links: Array < string > ) {
+		for (let i = 0; i < lines.length; i++) {
+			let text = lines[i];
+			
+
+			
+			if (text.contains('![[') && text.contains(']]') || text.contains('![') && text.contains(')') !&& text.contains('http://') !&& text.contains('https://')) {
+
+				let file = await this.getFile(text, links);
+				let LinkFile = file;
+				file = file.resolvedFile;
+
+				if (file.extension == "png" || file.extension == "jpg" || file.extension == "jpeg" || file.extension == "gif" || file.extension == "svg" || file.extension == "bmp") {
+					let data = await this.app.vault.readBinary(file);
+					let base64 = Buffer.from(data).toString('base64');
+					imagename.push(file.name);
+					imagelist.push(base64);
+					Inhalt += '\n!['+ file.name +'](data:image/'+ file.extension+';base64,' + base64 + ')' + '\n';
+				}
+
+				if (file.extension == 'md') {
+					let links2: Array < string > = [];
+					let data = await this.app.vault.cachedRead(file);
+					text = Buffer.from(data).toString('utf8');
+					if (text.startsWith('---')) {
+						let start = text.indexOf('---');
+						let end = text.indexOf('---', start + 3);
+						text = text.substring(end + 3);
+					}		
+
+
+					let ankers = LinkFile.reference.link.split('#');
+					console.log(ankers);
+					let anker = ankers[ankers.length - 1];
+					let heading = '### ' + LinkFile.reference.displayText + '\n';
+
+					if (ankers.length > 1) {
+						if (anker.contains("^")) {
+							console.log(anker);
+							let ankercaret = text.indexOf(anker);
+							text = text.substring(0, ankercaret);
+							text = text.substring(text.lastIndexOf("\n"));
+							heading = '';
+						} else {
+							let pos = text.indexOf(anker);
+							if (pos == -1) {
+								text = text.substring(pos);
+							} else {
+								text = text.substring(pos + anker.length);
+							}
+							let pos2 = text.indexOf('\n#', 30);
+							if (pos2 == -1) {} else {
+								text = text.substring(0, pos2);
+							}
+						}
+					}
+					text = heading + text;
+
+					let AllLinks2 = this.app.fileManager.getAllLinkResolutions();
+					for (let i = 0; i < AllLinks2.length; i++) {
+						if (AllLinks2[i].sourceFile.path == file.path) {
+							links2.push(AllLinks2[i]);
+
+						}
+					}
+					let lines2 = text.split("\n");
+
+					let nextmd = await this.Mergedown(lines2, Inhalt, imagelist, imagename, links2);
+					Inhalt = nextmd.Inhalt;
+
+				} else {
+
+				}
+
+
+
+			} else {
+				
+				if (text.contains('![') && text.contains(')') && text.contains('http://') || text.contains('![') && text.contains(')') && text.contains('https://')) {
+					// get text between ()
+					console.log('EXTERN');
+					Inhalt += text + "\n";
+				} 
+				
+			
+				
+				else{
+					Inhalt += text + "\n";
+				}
+			}
+		
+		
+
+
+		}
+
+		return {
+			Inhalt,
+			imagelist,
+			imagename
+		};
+
+	}
+
+
+
+
+
 
 }
