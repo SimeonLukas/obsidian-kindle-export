@@ -29,9 +29,9 @@ I was using Calibre and Pandoc-Export plugin, but I was wondering about a short 
 - [ ] .pdf export (would be nice for IOS & Android)
 ### Extra features (no kindle data needed)
 - [x] .md export _(mergedown)_
- - [x] Audio export
- - [x] Video export
- - [x] define own exportpath
+     - [x] Audio export
+     - [x] Video export
+     - [x] define own exportpath
 ### Just try it!
 For embedding local images, please use the following format:
 ``` ![[image.jpg]] ```
