@@ -161,6 +161,20 @@ export class KindleSettingTab extends PluginSettingTab {
           })
       );
 
+      new Setting(containerEl)
+      .setName("Exportpath")
+      .setDesc("Set the path where you want to export your files to. (e.g. /folder)")
+      .addText((text) =>
+        text
+          .setPlaceholder("/folder")
+          .setValue(this.plugin.settings.expath)
+          .onChange(async (value) => {
+            this.plugin.settings.expath = value;
+            await this.plugin.saveSettings();
+            console.log(this.plugin.settings);
+          })
+      );
+
       containerEl.createEl("hr");
       containerEl.createEl("p", { text: "Host your own Obsidian2Kindle-Converter."});
       containerEl.createEl("a", { text: "Fork from Github 🔗", href: "https://github.com/SimeonLukas/Obsidian2Kindle"});

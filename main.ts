@@ -28,6 +28,7 @@ const DEFAULT_SETTINGS: Partial < KindlePluginSettings > = {
 	port: "",
 	smtphost: "",
 	pass: "",
+	expath: "",
 	backend: "https://staneks.de/apps/md2mobi/",
 
 
@@ -66,9 +67,11 @@ export default class Kindle extends Plugin {
 				let lines = data.split("\n")
 				let result = await this.Mergedown(lines, Inhalt, imagelist, imagename, links);
 				Inhalt = result.Inhalt;
-				// get time in milliseconds
+				Inhalt = Inhalt.replace(/%%[\s\S]*?%%/g, "");
 				let time = new Date().getTime();
-				this.app.vault.create(dokument.basename + '_mergedown_'+time+'.md', Inhalt);
+				let expath = this.settings.expath;
+				this.app.vault.createFolder(expath);
+				this.app.vault.create(expath +'/'+ dokument.basename + '_mergedown_'+time+'.md', Inhalt);
 				if (lang == "de") {
 				new Notice("✔️ Mergedown erfolgreich!");
 				} else {
@@ -348,8 +351,21 @@ export default class Kindle extends Plugin {
 					let base64 = Buffer.from(data).toString('base64');
 					imagename.push(file.name);
 					imagelist.push(base64);
-					Inhalt += '\n!['+ file.name +'](data:image/'+ file.extension+';base64,' + base64 + ')' + '\n';
+					Inhalt += '\n!['+ file.name +'](data:image/'+ file.extension+';base64,' + base64 + ')\n';
 				}
+
+				if (file.extension == "mp4" || file.extension == "webm"  || file.extension == "ogv" || file.extension == "avi" || file.extension == "mov" || file.extension == "wmv" || file.extension == "mpg" || file.extension == "mpeg" || file.extension == "mkv" || file.extension == "flv" || file.extension == "swf" || file.extension == "vob" || file.extension == "m4v" || file.extension == "m4a" || file.extension == "m4b" || file.extension == "m4r" || file.extension == "3gp" || file.extension == "3g2" || file.extension == "f4v" || file.extension == "f4a" || file.extension == "f4b") {
+					let data = await this.app.vault.readBinary(file);
+					let base64 = Buffer.from(data).toString('base64');
+					Inhalt += '\n<video controls><source src="data:video/'+ file.extension+';base64,' + base64 + '" type="video/'+ file.extension+'"></video>\n';
+				}
+
+				if (file.extension == "mp3" || file.extension == "ogg" || file.extension == "wav" || file.extension == "flac") {
+					let data = await this.app.vault.readBinary(file);
+					let base64 = Buffer.from(data).toString('base64');
+					Inhalt += '\n<audio controls><source src="data:audio/'+ file.extension+';base64,' + base64 + '" type="audio/'+ file.extension+'"></audio>\n';
+				}
+
 
 				if (file.extension == 'md') {
 					let links2: Array < string > = [];
