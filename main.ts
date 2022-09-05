@@ -94,7 +94,10 @@ export default class Kindle extends Plugin {
 				let imagelist: string[] = [];
 				let imagename: string[] = [];
 				let links: Array < string > = [];
-				let lang = localStorage.getItem("language");
+				let lang = 'en';
+				if (localStorage.getItem('language') !== null){
+					lang = localStorage.getItem("language");
+				}
 				let dokument = this.app.workspace.getActiveFile();
 				if (dokument == null || dokument.extension != "md") {
 					new Notice("❌ No active .md file. Please open a .md file first!");
