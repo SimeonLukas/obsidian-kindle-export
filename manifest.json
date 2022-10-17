@@ -1,7 +1,7 @@
 {
 	"id": "obsidian-kindle-export",
 	"name": "Kindle",
-	"version": "0.0.11",
+	"version": "0.0.12",
 	"minAppVersion": "0.13.24",
 	"description": "Send .md as .mobi to Kindle",
 	"author": "Simeon Stanek",
