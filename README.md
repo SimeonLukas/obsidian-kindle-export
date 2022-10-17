@@ -12,6 +12,7 @@ I was using Calibre and Pandoc-Export plugin, but I was wondering about a short 
 ### To Do's:
 - [x] Export images
 - [x] Export embedded .md files
+- [x] Export embedded .mp3 files (Pocketbook)
 - [x] Obsidian cover for the books --> Due to the .epub format, the cover will not appear on the bookshelf
 - [x] Table of contents
 - [x] ```<div style="page-break-after: always;"></div>``` is working
