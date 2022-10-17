@@ -251,6 +251,14 @@ export default class Kindle extends Plugin {
 					Inhalt += '\n<p><img class="intern" src="uploads/' + file.name + '"></p>' + '\n\n';
 				}
 
+				if (file.extension == "mp3") {
+					let data = await this.app.vault.readBinary(file);
+					let base64 = Buffer.from(data).toString('base64');
+					imagename.push(file.name);
+					imagelist.push(base64);
+					Inhalt += '\n<p><audio class="intern" type="audio/mpeg" src="uploads/' + file.name + '" controls="controls"/></p>' + '\n\n';
+				}
+
 				if (file.extension == 'md') {
 					let links2: Array < string > = [];
 					let data = await this.app.vault.cachedRead(file);
@@ -262,17 +270,16 @@ export default class Kindle extends Plugin {
 					}		
 
 
-					let ankers = LinkFile.reference.link.split('#');
-					console.log(ankers);
-					let anker = ankers[ankers.length - 1];
-					let heading = '<h3><i>' + LinkFile.reference.displayText + '</i></h3>\n\n';
+					let anker = LinkFile.reference.link.split('#');
+					anker = anker[anker.length - 1];
+					let heading = '<h3><i>' + LinkFile.reference.displayText + '</i></h3>\n';
 
-					if (ankers.length > 1) {
+					if (anker != undefined) {
 						if (anker.contains("^")) {
 							console.log(anker);
 							let ankercaret = text.indexOf(anker);
 							text = text.substring(0, ankercaret);
-							text = text.substring(text.lastIndexOf("\n\n"));
+							text = text.substring(text.lastIndexOf("\n"));
 							heading = '';
 						} else {
 							let pos = text.indexOf(anker);
