@@ -24,6 +24,7 @@ I was using Calibre and Pandoc-Export plugin, but I was wondering about a short 
  - [x] Create workaround for other embedded files
  - [x] Add ==highlighting==
  - [x] .epub export
+- [x] Footnotes
 - [ ] Foldercover or filecover
 - [ ] .html export (Archive)
 - [ ] .pdf export (would be nice for IOS & Android)
