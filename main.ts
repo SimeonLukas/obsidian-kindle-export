@@ -68,6 +68,7 @@ export default class Kindle extends Plugin {
 				let result = await this.Mergedown(lines, Inhalt, imagelist, imagename, links);
 				Inhalt = result.Inhalt;
 				Inhalt = Inhalt.replace(/%%[\s\S]*?%%/g, "");
+				Inhalt = Inhalt.replace("\n]]", "");
 				let time = new Date().getTime();
 				let expath = this.settings.expath;
 				this.app.vault.createFolder(expath);
@@ -89,108 +90,20 @@ export default class Kindle extends Plugin {
 		this.addCommand({
 			id: 'Export',
 			name: 'Export',
-			callback: async () => {
-				let Inhalt: string = "";
-				let imagelist: string[] = [];
-				let imagename: string[] = [];
-				let links: Array < string > = [];
-				let lang = 'en';
-				if (localStorage.getItem('language') !== null){
-					lang = localStorage.getItem("language");
-				}
-				let dokument = this.app.workspace.getActiveFile();
-				if (dokument == null || dokument.extension != "md") {
-					new Notice("❌ No active .md file. Please open a .md file first!");
-					return;
-				}
-				let AllLinks = this.app.fileManager.getAllLinkResolutions();
-				for (let i = 0; i < AllLinks.length; i++) {
-					if (AllLinks[i].sourceFile.path == dokument.path) {
-						links.push(AllLinks[i]);
-					}
-				}
-				let data = await this.app.vault.cachedRead(dokument)
-				if (data.startsWith('---')) {
-					let start = data.indexOf('---');
-					let end = data.indexOf('---', start + 3);
-					data = data.substring(end + 3);
-				}
-				let lines = data.split("\n")
-				let result = await this.GetEbook(lines, Inhalt, imagelist, imagename, links);
-				Inhalt = result.Inhalt;
-				imagelist = result.imagelist;
-				imagename = result.imagename;
-				Inhalt = Inhalt.replace(/%%[\s\S]*?%%/g, "");
-				Inhalt = Inhalt.replace(/```dataviewjs[\s\S]*?```/g, "");
-				Inhalt = Inhalt.replace(/==[\s\S]*?==/g, "<u>$&</u>");
-				Inhalt = Inhalt.replace(/==/g, "");
-				if (this.settings.pagebreak == true) {
-					Inhalt = Inhalt.replace(/---/g, '---\n<p><div style="page-break-after: always;"></div></p>\n');}
-					else{
-					} 
-				let host = this.settings.smtphost;
-				let port = this.settings.port;
-				let pass = this.settings.pass;
-				let kindlemail = this.settings.kindlemail;
-				let sendmail = this.settings.sendmail;
-				let author = this.settings.author;
-				let user = this.settings.user;
-				let toc = this.settings.toc;
-				let backend = this.settings.backend;
-				if (host == "" || port == "" || pass == "" || kindlemail == "" || sendmail == "" || author == "" || user == "" || backend == "") {
-					if (lang == "de") {
-						new Notice("Bitte ergänze die Einstellungen.");
-					} else {
-						new Notice("Please fill in the settings!");
-					}
-					return;
-				}
-				if (lang == "de") {
-					new Notice('😃 Dein Dokument ' + dokument.basename + ' wird nun exportiert.');
-				} else {
-					new Notice('😃 Your Note ' + dokument.basename + ' is being converted to an ebook');
-				}
-				var url = this.settings.backend;
-				var formData = new FormData();
-				for (let i = 0; i < imagelist.length; i++) {
-					formData.append('file' + i, imagelist[i]);
-					console.log(imagename[i]);
-					console.log(imagelist[i]);
-				}
-				// Coverbild toDo
-				// formData.append('cover', base64cover);
-				// get language
-				formData.append('lang', lang);
-				formData.append('Bilder', imagename);
-				formData.append('text', Inhalt);
-				formData.append('title', dokument.basename);
-				formData.append('author', author);
-				formData.append('email', sendmail);
-				formData.append('kindle', kindlemail);
-				formData.append('port', port);
-				formData.append('host', host);
-				formData.append('pass', pass);
-				formData.append('user', user);
-				formData.append('toc', toc);
-				await fetch(url, {
-						method: 'POST',
-						body: formData,
-					})
-					.then(function (response) {
-						return response.text();
-					})
-					.then(function (body) {
-						new Notice(body);
-					})
-					.catch(function() {
-						new Notice("❌ Internetconnection error or Server is offline");
-					});
-
+			callback: () => {
+				this.export();
+			  },
+			});
+			
+			
+			if (this.settings.ribbonicon == true) {	
+			this.addRibbonIcon("paper-plane", "send2E-Reader", () => {
+				this.export();
+			  });
 			}
-		});
 
-	}
 
+		}
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 
@@ -388,12 +301,11 @@ export default class Kindle extends Plugin {
 					}		
 
 
-					let ankers = LinkFile.reference.link.split('#');
-					console.log(ankers);
-					let anker = ankers[ankers.length - 1];
-					let heading = '### ' + LinkFile.reference.displayText + '\n';
+					let anker = LinkFile.reference.link.split('#');
+					anker = anker[anker.length - 1];
+					let heading = '# ' + LinkFile.reference.displayText + '\n';
 
-					if (ankers.length > 1) {
+					if (anker != undefined) {
 						if (anker.contains("^")) {
 							console.log(anker);
 							let ankercaret = text.indexOf(anker);
@@ -461,9 +373,104 @@ export default class Kindle extends Plugin {
 
 	}
 
+	async export() {
+		let Inhalt: string = "";
+		let imagelist: string[] = [];
+		let imagename: string[] = [];
+		let links: Array < string > = [];
+		let lang = 'en';
+		if (localStorage.getItem('language') !== null){
+			lang = localStorage.getItem("language");
+		}
+		let dokument = this.app.workspace.getActiveFile();
+		if (dokument == null || dokument.extension != "md") {
+			new Notice("❌ No active .md file. Please open a .md file first!");
+			return;
+		}
+		let AllLinks = this.app.fileManager.getAllLinkResolutions();
+		for (let i = 0; i < AllLinks.length; i++) {
+			if (AllLinks[i].sourceFile.path == dokument.path) {
+				links.push(AllLinks[i]);
+			}
+		}
+		let data = await this.app.vault.cachedRead(dokument)
+		if (data.startsWith('---')) {
+			let start = data.indexOf('---');
+			let end = data.indexOf('---', start + 3);
+			data = data.substring(end + 3);
+		}
+		let lines = data.split("\n")
+		let result = await this.GetEbook(lines, Inhalt, imagelist, imagename, links);
+		Inhalt = result.Inhalt;
+		imagelist = result.imagelist;
+		imagename = result.imagename;
+		Inhalt = Inhalt.replace(/%%[\s\S]*?%%/g, "");
+		Inhalt = Inhalt.replace(/```dataviewjs[\s\S]*?```/g, "");
+		Inhalt = Inhalt.replace(/==[\s\S]*?==/g, "<u>$&</u>");
+		Inhalt = Inhalt.replace(/==/g, "");
+		if (this.settings.pagebreak == true) {
+			Inhalt = Inhalt.replace(/---/g, '---\n<p><div style="page-break-after: always;"></div></p>\n');}
+			else{
+			} 
+		let host = this.settings.smtphost;
+		let port = this.settings.port;
+		let pass = this.settings.pass;
+		let kindlemail = this.settings.kindlemail;
+		let sendmail = this.settings.sendmail;
+		let author = this.settings.author;
+		let user = this.settings.user;
+		let toc = this.settings.toc;
+		let backend = this.settings.backend;
+		if (host == "" || port == "" || pass == "" || kindlemail == "" || sendmail == "" || author == "" || user == "" || backend == "") {
+			if (lang == "de") {
+				new Notice("Bitte ergänze die Einstellungen.");
+			} else {
+				new Notice("Please fill in the settings!");
+			}
+			return;
+		}
+		if (lang == "de") {
+			new Notice('😃 Dein Dokument ' + dokument.basename + ' wird nun exportiert.');
+		} else {
+			new Notice('😃 Your Note ' + dokument.basename + ' is being converted to an ebook');
+		}
+		var url = this.settings.backend;
+		var formData = new FormData();
+		for (let i = 0; i < imagelist.length; i++) {
+			formData.append('file' + i, imagelist[i]);
+			console.log(imagename[i]);
+			console.log(imagelist[i]);
+		}
+		// Coverbild toDo
+		// formData.append('cover', base64cover);
+		// get language
+		formData.append('lang', lang);
+		formData.append('Bilder', imagename);
+		formData.append('text', Inhalt);
+		formData.append('title', dokument.basename);
+		formData.append('author', author);
+		formData.append('email', sendmail);
+		formData.append('kindle', kindlemail);
+		formData.append('port', port);
+		formData.append('host', host);
+		formData.append('pass', pass);
+		formData.append('user', user);
+		formData.append('toc', toc);
+		await fetch(url, {
+				method: 'POST',
+				body: formData,
+			})
+			.then(function (response) {
+				return response.text();
+			})
+			.then(function (body) {
+				new Notice(body);
+			})
+			.catch(function() {
+				new Notice("❌ Internetconnection error or Server is offline");
+			});
 
-
-
+		}
 
 
 }

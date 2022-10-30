@@ -48,7 +48,7 @@ export class KindleSettingTab extends PluginSettingTab {
 
       new Setting(containerEl)
       .setName("Kindlemail")
-      .setDesc("Your Kindle email")
+      .setDesc("Your Kindle/PocketBook email")
       .addText((text) =>
         text
           .setPlaceholder("you@kindle.com")
@@ -130,6 +130,19 @@ export class KindleSettingTab extends PluginSettingTab {
             console.log(this.plugin.settings);
           })
       );
+
+      new Setting(containerEl)
+      .setName("Generate TOC")
+      .setDesc("Generate Table of Contents.")
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.plugin.settings.toc)
+          .onChange(async (value) => {
+            this.plugin.settings.toc = value;
+            await this.plugin.saveSettings();
+            console.log(this.plugin.settings);
+          })
+      );
       containerEl.createEl("hr");
       containerEl.createEl("h1", { text: "⭐ Suggested features" });
      
@@ -175,26 +188,27 @@ export class KindleSettingTab extends PluginSettingTab {
           })
       );
 
-      containerEl.createEl("hr");
-      containerEl.createEl("p", { text: "Host your own Obsidian2Kindle-Converter."});
-      containerEl.createEl("a", { text: "Fork from Github 🔗", href: "https://github.com/SimeonLukas/Obsidian2Kindle"});
-      containerEl.createEl("hr");
-      containerEl.createEl("h1", { text: "⏳Beta Settings" });
-      
       new Setting(containerEl)
-      .setName("Generate TOC")
-      .setDesc("Generate Table of Contents. This is a beta feature and may not work correctly.")
+      .setName("Add Ribbon-Icon")
+      .setDesc("Suggested feature: Add Ribbon-Icon for the Export-Command. Plugin reloads after saving.")
       .addToggle((toggle) =>
         toggle
-          .setValue(this.plugin.settings.toc)
+          .setValue(this.plugin.settings.ribbonicon)
           .onChange(async (value) => {
-            this.plugin.settings.toc = value;
+            this.plugin.settings.ribbonicon= value;
             await this.plugin.saveSettings();
             console.log(this.plugin.settings);
+            this.app.plugins.unloadPlugin('obsidian-kindle-export');
+            this.app.plugins.loadPlugin('obsidian-kindle-export');
           })
       );
 
       containerEl.createEl("hr");
+      containerEl.createEl("p", { text: "Host your own Obsidian2Kindle-Converter."});
+      containerEl.createEl("a", { text: "Fork from Github 🔗", href: "https://github.com/SimeonLukas/Obsidian2Kindle"});
+      containerEl.createEl("br");
+
+  
       containerEl.createEl("a", { text: "Buy me a ☕", href: "https://www.buymeacoffee.com/simeonlukas"});
 
 
