@@ -8,6 +8,7 @@ import {
 import {
 	KindleSettingTab
 } from "./settings";
+import { fail } from "assert";
 
 
 
@@ -41,7 +42,6 @@ export default class Kindle extends Plugin {
 	async onload() {
 		await this.loadSettings();
 		this.addSettingTab(new KindleSettingTab(this.app, this));
-
 		if (this.settings.mergedown == true) {		
 		this.addCommand({
 			id: 'Mergedown',
@@ -57,13 +57,10 @@ export default class Kindle extends Plugin {
 					new Notice("❌ No active .md file. Please open a .md file first!");
 					return;
 				}
-				let AllLinks = this.app.fileManager.getAllLinkResolutions();
-				for (let i = 0; i < AllLinks.length; i++) {
-					if (AllLinks[i].sourceFile.path == dokument.path) {
-						links.push(AllLinks[i]);
-					}
-				}
+				let Alllinks = this.app.metadataCache.resolvedLinks[dokument.path];
+				links = Object.entries(Alllinks);
 				let data = await this.app.vault.cachedRead(dokument)
+				data = data.replace(/]]/g, "]]\n");
 				let lines = data.split("\n")
 				let result = await this.Mergedown(lines, Inhalt, imagelist, imagename, links);
 				Inhalt = result.Inhalt;
@@ -120,15 +117,25 @@ export default class Kindle extends Plugin {
 		let end = text.indexOf(']]', start + 3);
 		let name = text.substring(start + 3, end);
 		name = "![[" + name + "]]";
-		console.log(name);
+		
+
 		for (let i = 0; i < links.length; i++) {
-			if (links[i].reference.original == name) {
-				console.log(links[i].reference.original);
-				var file = links[i];
-				return file;
+            let foundLink = links[i][0];
+            
+            let chunk = foundLink.split('/');
+            
+			foundLink= chunk[chunk.length - 1];
+			let extension = foundLink.split('.');
+            foundLink = extension[0];
+            
+            if (name.contains(foundLink)) { 
+				
+				
+                var file = links[i][0];
+
+				return [file, name];
 			}
 			else{
-				console.log("nicht gefunden");
 			}
 		}
 
@@ -153,23 +160,31 @@ export default class Kindle extends Plugin {
 			if (text.contains('![[') && text.contains(']]') || text.contains('![') && text.contains(')') !&& text.contains('http://') !&& text.contains('https://')) {
 
 				let file = await this.getFile(text, links);
-				let LinkFile = file;
-				file = file.resolvedFile;
+				let FileLink = file[1];
+				file = file[0];
+                file = this.app.vault.getAbstractFileByPath(file);
+				if (file == this.app.workspace.getActiveFile())
+				{
+					new Notice('❌ You can not embed the file in his own file');
+                    throw new Error("In the Moment it is not possible to embed the file in his own file"); 
+				}
 
 				if (file.extension == "png" || file.extension == "jpg" || file.extension == "jpeg" || file.extension == "gif" || file.extension == "svg" || file.extension == "bmp") {
 					let data = await this.app.vault.readBinary(file);
 					let base64 = Buffer.from(data).toString('base64');
-					imagename.push(file.name);
+					var filename = file.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+					imagename.push(filename);
 					imagelist.push(base64);
-					Inhalt += '\n<p><img class="intern" src="uploads/' + file.name + '"></p>' + '\n\n';
+					Inhalt += '\n<p><img class="intern" src="uploads/' + filename + '"></p>' + '\n\n';
 				}
 
 				if (file.extension == "mp3") {
 					let data = await this.app.vault.readBinary(file);
 					let base64 = Buffer.from(data).toString('base64');
-					imagename.push(file.name);
+					var filename = file.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+					imagename.push(filename);
 					imagelist.push(base64);
-					Inhalt += '\n<p><audio class="intern" type="audio/mpeg" src="uploads/' + file.name + '" controls="controls"/></p>' + '\n\n';
+					Inhalt += '\n<p><audio class="intern" type="audio/mpeg" src="uploads/' + filename + '" controls="controls"/></p>' + '\n\n';
 				}
 
 				if (file.extension == 'md') {
@@ -180,42 +195,56 @@ export default class Kindle extends Plugin {
 						let start = text.indexOf('---');
 						let end = text.indexOf('---', start + 3);
 						text = text.substring(end + 3);
-					}		
-
-
-					let anker = LinkFile.reference.link.split('#');
-					anker = anker[anker.length - 1];
-					let heading = '<h3><i>' + LinkFile.reference.displayText + '</i></h3>\n';
-
-					if (anker != undefined) {
-						if (anker.contains("^")) {
-							console.log(anker);
-							let ankercaret = text.indexOf(anker);
-							text = text.substring(0, ankercaret);
-							text = text.substring(text.lastIndexOf("\n"));
-							heading = '';
-						} else {
-							let pos = text.indexOf(anker);
-							if (pos == -1) {
-								text = text.substring(pos);
-							} else {
-								text = text.substring(pos + anker.length);
-							}
-							let pos2 = text.indexOf('\n#', 30);
-							if (pos2 == -1) {} else {
-								text = text.substring(0, pos2);
-							}
-						}
 					}
+
+
+
+					let heading = "";
+					let Iteration = 0; //Set Iterationcounter for each Link (Can't break iterateReferences)
+					this.app.metadataCache.iterateReferences((sourcePath: string, reference: ReferenceCache) => {
+                        if (reference.link.contains(file.basename) && reference.original == FileLink && Iteration == 0) {
+						                          
+							let anker = reference.link.split('#');
+							let ankerSplit = anker.length;
+                            
+							anker = anker[anker.length - 1];
+							heading = '<h3><i>' + reference.displayText + '</i></h3>\n';
+		
+							if (anker != undefined && ankerSplit > 1) {
+								if (anker.contains("^")) {
+									
+									let ankercaret = text.indexOf(anker);
+									text = text.substring(0, ankercaret);
+									text = text.substring(text.lastIndexOf("\n"));
+									heading = '';
+								} else {
+									let pos = text.indexOf(anker);
+									if (pos == -1) {
+										text = text.substring(pos);
+									} else {
+										
+										text = text.substring(pos);
+                                        text = text.replace(anker, '');
+										
+                                        
+									}
+									let pos2 = text.indexOf('\n#', 10);
+									if (pos2 == -1) {} else {
+										text = text.substring(0, pos2);
+									}
+								}
+							
+							}
+                            Iteration++;
+						}
+						
+						
+										
+					});
+
+
+
 					text = heading + text;
-
-					let AllLinks2 = this.app.fileManager.getAllLinkResolutions();
-					for (let i = 0; i < AllLinks2.length; i++) {
-						if (AllLinks2[i].sourceFile.path == file.path) {
-							links2.push(AllLinks2[i]);
-
-						}
-					}
 					let lines2 = text.split("\n");
 
 					let nextmd = await this.GetEbook(lines2, Inhalt, imagelist, imagename, links2);
@@ -231,7 +260,7 @@ export default class Kindle extends Plugin {
 				
 				if (text.contains('![') && text.contains(')') && text.contains('http://') || text.contains('![') && text.contains(')') && text.contains('https://')) {
 					// get text between ()
-					console.log('EXTERN');
+					
 					let ImageLink = text.substring(text.indexOf('(') + 1, text.indexOf(')'));
 					Inhalt += '<p><img class="extern" src="' + ImageLink + '"></p> \n\n';
 				} 
@@ -240,123 +269,6 @@ export default class Kindle extends Plugin {
 				
 				else{
 					Inhalt += text + " \n\n";
-				}
-			}
-		
-		
-
-
-		}
-
-		return {
-			Inhalt,
-			imagelist,
-			imagename
-		};
-
-	}
-
-
-	async Mergedown(lines: string[], Inhalt: string, imagelist: string[], imagename: string[], links: Array < string > ) {
-		for (let i = 0; i < lines.length; i++) {
-			let text = lines[i];
-			
-
-			
-			if (text.contains('![[') && text.contains(']]') || text.contains('![') && text.contains(')') !&& text.contains('http://') !&& text.contains('https://')) {
-
-				let file = await this.getFile(text, links);
-				let LinkFile = file;
-				file = file.resolvedFile;
-
-				if (file.extension == "png" || file.extension == "jpg" || file.extension == "jpeg" || file.extension == "gif" || file.extension == "svg" || file.extension == "bmp") {
-					let data = await this.app.vault.readBinary(file);
-					let base64 = Buffer.from(data).toString('base64');
-					imagename.push(file.name);
-					imagelist.push(base64);
-					Inhalt += '\n!['+ file.name +'](data:image/'+ file.extension+';base64,' + base64 + ')\n';
-				}
-
-				if (file.extension == "mp4" || file.extension == "webm"  || file.extension == "ogv" || file.extension == "avi" || file.extension == "mov" || file.extension == "wmv" || file.extension == "mpg" || file.extension == "mpeg" || file.extension == "mkv" || file.extension == "flv" || file.extension == "swf" || file.extension == "vob" || file.extension == "m4v" || file.extension == "m4a" || file.extension == "m4b" || file.extension == "m4r" || file.extension == "3gp" || file.extension == "3g2" || file.extension == "f4v" || file.extension == "f4a" || file.extension == "f4b") {
-					let data = await this.app.vault.readBinary(file);
-					let base64 = Buffer.from(data).toString('base64');
-					Inhalt += '\n<video controls><source src="data:video/'+ file.extension+';base64,' + base64 + '" type="video/'+ file.extension+'"></video>\n';
-				}
-
-				if (file.extension == "mp3" || file.extension == "ogg" || file.extension == "wav" || file.extension == "flac") {
-					let data = await this.app.vault.readBinary(file);
-					let base64 = Buffer.from(data).toString('base64');
-					Inhalt += '\n<audio controls><source src="data:audio/'+ file.extension+';base64,' + base64 + '" type="audio/'+ file.extension+'"></audio>\n';
-				}
-
-
-				if (file.extension == 'md') {
-					let links2: Array < string > = [];
-					let data = await this.app.vault.cachedRead(file);
-					text = Buffer.from(data).toString('utf8');
-					if (text.startsWith('---')) {
-						let start = text.indexOf('---');
-						let end = text.indexOf('---', start + 3);
-						text = text.substring(end + 3);
-					}		
-
-
-					let anker = LinkFile.reference.link.split('#');
-					anker = anker[anker.length - 1];
-					let heading = '# ' + LinkFile.reference.displayText + '\n';
-
-					if (anker != undefined) {
-						if (anker.contains("^")) {
-							console.log(anker);
-							let ankercaret = text.indexOf(anker);
-							text = text.substring(0, ankercaret);
-							text = text.substring(text.lastIndexOf("\n"));
-							heading = '';
-						} else {
-							let pos = text.indexOf(anker);
-							if (pos == -1) {
-								text = text.substring(pos);
-							} else {
-								text = text.substring(pos + anker.length);
-							}
-							let pos2 = text.indexOf('\n#', 30);
-							if (pos2 == -1) {} else {
-								text = text.substring(0, pos2);
-							}
-						}
-					}
-					text = heading + text;
-
-					let AllLinks2 = this.app.fileManager.getAllLinkResolutions();
-					for (let i = 0; i < AllLinks2.length; i++) {
-						if (AllLinks2[i].sourceFile.path == file.path) {
-							links2.push(AllLinks2[i]);
-
-						}
-					}
-					let lines2 = text.split("\n");
-
-					let nextmd = await this.Mergedown(lines2, Inhalt, imagelist, imagename, links2);
-					Inhalt = nextmd.Inhalt;
-
-				} else {
-
-				}
-
-
-
-			} else {
-				
-				if (text.contains('![') && text.contains(')') && text.contains('http://') || text.contains('![') && text.contains(')') && text.contains('https://')) {
-					// get text between ()
-					console.log('EXTERN');
-					Inhalt += text + "\n";
-				} 
-				
-			
-				
-				else{
-					Inhalt += text + "\n";
 				}
 			}
 		
@@ -386,19 +298,21 @@ export default class Kindle extends Plugin {
 		if (dokument == null || dokument.extension != "md") {
 			new Notice("❌ No active .md file. Please open a .md file first!");
 			return;
+
+
+
+
 		}
-		let AllLinks = this.app.fileManager.getAllLinkResolutions();
-		for (let i = 0; i < AllLinks.length; i++) {
-			if (AllLinks[i].sourceFile.path == dokument.path) {
-				links.push(AllLinks[i]);
-			}
-		}
+
+        let Alllinks = this.app.metadataCache.resolvedLinks[dokument.path];
+        links = Object.entries(Alllinks);
 		let data = await this.app.vault.cachedRead(dokument)
 		if (data.startsWith('---')) {
 			let start = data.indexOf('---');
 			let end = data.indexOf('---', start + 3);
 			data = data.substring(end + 3);
 		}
+		data = data.replace(/]]/g, "]]\n");
 		let lines = data.split("\n")
 		let result = await this.GetEbook(lines, Inhalt, imagelist, imagename, links);
 		Inhalt = result.Inhalt;
@@ -438,15 +352,15 @@ export default class Kindle extends Plugin {
 		var formData = new FormData();
 		for (let i = 0; i < imagelist.length; i++) {
 			formData.append('file' + i, imagelist[i]);
-			console.log(imagename[i]);
-			console.log(imagelist[i]);
+			
+			
 		}
 		// Coverbild toDo
 		// formData.append('cover', base64cover);
 		// get language
 		formData.append('lang', lang);
 		formData.append('Bilder', imagename);
-		formData.append('text', Inhalt);
+		formData.append('text', '#' + dokument.basename + '\n' + Inhalt);
 		formData.append('title', dokument.basename);
 		formData.append('author', author);
 		formData.append('email', sendmail);
@@ -471,6 +385,145 @@ export default class Kindle extends Plugin {
 			});
 
 		}
+
+
+
+// Mergedown Feature (I know the DRY Method but it was more easy to copy & paste)
+
+
+		async Mergedown(lines: string[], Inhalt: string, imagelist: string[], imagename: string[], links: Array < string > ) {
+			for (let i = 0; i < lines.length; i++) {
+				let text = lines[i];
+				
+	
+				
+				if (text.contains('![[') && text.contains(']]') || text.contains('![') && text.contains(')') !&& text.contains('http://') !&& text.contains('https://')) {
+	
+					let file = await this.getFile(text, links);
+					let FileLink = file[1];
+					file = file[0];
+                	file = this.app.vault.getAbstractFileByPath(file);
+					if (file == this.app.workspace.getActiveFile())
+					{
+						new Notice('❌ You can not embed the file in his own file');
+						throw new Error("In the Moment it is not possible to embed the file in his own file"); 
+					}
+	
+					if (file.extension == "png" || file.extension == "jpg" || file.extension == "jpeg" || file.extension == "gif" || file.extension == "svg" || file.extension == "bmp") {
+						let data = await this.app.vault.readBinary(file);
+						let base64 = Buffer.from(data).toString('base64');
+						imagename.push(file.name);
+						imagelist.push(base64);
+						Inhalt += '\n!['+ file.name +'](data:image/'+ file.extension+';base64,' + base64 + ')\n';
+					}
+	
+					if (file.extension == "mp4" || file.extension == "webm"  || file.extension == "ogv" || file.extension == "avi" || file.extension == "mov" || file.extension == "wmv" || file.extension == "mpg" || file.extension == "mpeg" || file.extension == "mkv" || file.extension == "flv" || file.extension == "swf" || file.extension == "vob" || file.extension == "m4v" || file.extension == "m4a" || file.extension == "m4b" || file.extension == "m4r" || file.extension == "3gp" || file.extension == "3g2" || file.extension == "f4v" || file.extension == "f4a" || file.extension == "f4b") {
+						let data = await this.app.vault.readBinary(file);
+						let base64 = Buffer.from(data).toString('base64');
+						Inhalt += '\n<video controls><source src="data:video/'+ file.extension+';base64,' + base64 + '" type="video/'+ file.extension+'"></video>\n';
+					}
+	
+					if (file.extension == "mp3" || file.extension == "ogg" || file.extension == "wav" || file.extension == "flac") {
+						let data = await this.app.vault.readBinary(file);
+						let base64 = Buffer.from(data).toString('base64');
+						Inhalt += '\n<audio controls><source src="data:audio/'+ file.extension+';base64,' + base64 + '" type="audio/'+ file.extension+'"></audio>\n';
+					}
+	
+	
+					if (file.extension == 'md') {
+						let links2: Array < string > = [];
+						let data = await this.app.vault.cachedRead(file);
+						text = Buffer.from(data).toString('utf8');
+						if (text.startsWith('---')) {
+							let start = text.indexOf('---');
+							let end = text.indexOf('---', start + 3);
+							text = text.substring(end + 3);
+						}
+	
+	
+	
+						let heading = "";
+						let Iteration = 0; //Set Iterationcounter for each Link (Can't break iterateReferences)
+						this.app.metadataCache.iterateReferences((sourcePath: string, reference: ReferenceCache) => {
+							if (reference.link.contains(file.basename) && reference.original == FileLink && Iteration == 0) {
+													  
+								let anker = reference.link.split('#');
+								let ankerSplit = anker.length;
+								
+								anker = anker[anker.length - 1];
+								heading = '<h3><i>' + reference.displayText + '</i></h3>\n';
+			
+								if (anker != undefined && ankerSplit > 1) {
+									if (anker.contains("^")) {
+										
+										let ankercaret = text.indexOf(anker);
+										text = text.substring(0, ankercaret);
+										text = text.substring(text.lastIndexOf("\n"));
+										heading = '';
+									} else {
+										let pos = text.indexOf(anker);
+										if (pos == -1) {
+											text = text.substring(pos);
+										} else {
+											
+											text = text.substring(pos);
+										
+											text = text.replace(anker, '');
+											
+											
+										}
+										let pos2 = text.indexOf('\n#', 10);
+										if (pos2 == -1) {} else {
+											text = text.substring(0, pos2);
+										}
+									}
+								
+								}
+								Iteration++;
+							}
+							
+							
+											
+						});
+	
+	
+	
+						text = heading + text;
+						let lines2 = text.split("\n");
+	
+						let nextmd = await this.Mergedown(lines2, Inhalt, imagelist, imagename, links2);
+						Inhalt = nextmd.Inhalt;
+					
+					}
+	
+					} else {
+					
+					if (text.contains('![') && text.contains(')') && text.contains('http://') || text.contains('![') && text.contains(')') && text.contains('https://')) {
+						// get text between ()
+						
+						Inhalt += text + "\n";
+					} 
+					
+				
+					
+					else{
+						Inhalt += text + "\n";
+					}
+				}
+			
+			
+	
+	
+			}
+	
+			return {
+				Inhalt,
+				imagelist,
+				imagename
+			};
+	
+		}
+
 
 
 }
