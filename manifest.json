@@ -1,9 +1,9 @@
 {
-	"id": "obsidian-kindle-export",
-	"name": "Kindle",
-	"version": "0.0.14",
+	"id": "obsidian-agate",
+	"name": "Agate",
+	"version": "0.0.1",
 	"minAppVersion": "0.13.24",
-	"description": "Send .md as .mobi to Kindle",
+	"description": "Agate is a simple, fast, and easy way to publish your blog posts to your website.",
 	"author": "Simeon Stanek",
 	"authorUrl": "https://github.com/SimeonLukas",
 	"isDesktopOnly": false
