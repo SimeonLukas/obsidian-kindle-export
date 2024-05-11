@@ -9,6 +9,9 @@
 ### Introduction
 I was using Calibre and Pandoc-Export plugin, but I was wondering about a short way to export your .md files in one command and add all embedded files. So you dont have to use a .pdf file. The plugin creates a *Kindle: Export* command, which sends all embedded images and .md files to a PHP backend ([Host your own private PHP Backend!](https://github.com/SimeonLukas/Obsidian2Kindle)) which converts it to a .epub file and sends it via email to your Kindle/PocketBook. If you are not hosting on your own, you will send private data to my server. Please be aware of this. I won't save or read your data!
 
+### New open Backend:
+https://md2epub.staneks.de/
+
 ### To Do's:
 - [x] Export images
 - [x] Export embedded .md files
