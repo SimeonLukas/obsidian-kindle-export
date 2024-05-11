@@ -1,7 +1,7 @@
 # Project 2: obsidian-kindle-export 
 ## An Obsidian-plugin which sends your notes to your Kindle/PocketBook as .epub file
 ### Work paperless
-![](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fstaneks.de%2Fapps%2Fmd2mobi%2Fcounter&cacheSeconds=3) ![GitHub manifest version (path)](https://img.shields.io/github/manifest-json/v/SimeonLukas/obsidian-kindle-export/main?label=Version)
+![](https://img.shields.io/endpoint?style=flat&url=https://md2epub.staneks.de/counter&cacheSeconds=3) ![GitHub manifest version (path)](https://img.shields.io/github/manifest-json/v/SimeonLukas/obsidian-kindle-export/main?label=Version)
 ![](https://github.com/SimeonLukas/obsidian-kindle-export/raw/main/files/screenrecord.gif)
 
 ![](https://github.com/SimeonLukas/obsidian-kindle-export/raw/main/files/ebook.jpg)
