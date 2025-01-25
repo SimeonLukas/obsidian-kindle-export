@@ -50,8 +50,6 @@ If you have problems with the plugin, please let me know.
 
 <a href="https://www.buymeacoffee.com/simeonlukas" target="_blank" ><img src="https://github.com/SimeonLukas/obsidian-kindle-export/raw/main/files/coffee.jpg" width="75%"></a>
 
-[© Simeon Stanek](https://staneks.de)
-
 
 
 
